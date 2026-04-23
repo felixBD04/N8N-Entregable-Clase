@@ -1,0 +1,168 @@
+{
+    "nodes": [
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -304,
+          0
+        ],
+        "id": "6d7b12fa-1cbe-43b8-b9c0-8ffb527128fb",
+        "name": "When clicking ‘Execute workflow’"
+      },
+      {
+        "parameters": {
+          "url": "=https://rickandmortyapi.com/api/character/{{ $json.id }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          192,
+          0
+        ],
+        "id": "30cc8e4f-f98e-4190-9ec9-4a8c06775f7c",
+        "name": "HTTP Request"
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "1zYZHcS4HbL5rpt35x9CsOguMApc-R4i5P4Cv3wUq7m0",
+            "mode": "list",
+            "cachedResultName": "clima_Usuario",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zYZHcS4HbL5rpt35x9CsOguMApc-R4i5P4Cv3wUq7m0/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "personajes",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zYZHcS4HbL5rpt35x9CsOguMApc-R4i5P4Cv3wUq7m0/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Personaje": "={{ $json.name }}",
+              "estado": "={{ $json.status }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "Personaje",
+                "displayName": "Personaje",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "estado",
+                "displayName": "estado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          416,
+          0
+        ],
+        "id": "96958202-e5f8-42cb-b781-2103e32e0e81",
+        "name": "Append row in sheet",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "HzhFjWM0vlFndaAU",
+            "name": "Google Sheets account 2"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          640,
+          0
+        ],
+        "id": "84b92b51-1b99-489b-8ab5-484aa1678e7b",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {
+          "jsCode": "const randomId = Math.floor(Math.random() * 826) + 1; // total personajes aprox\nreturn [{ json: { id: randomId } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -64,
+          0
+        ],
+        "id": "eb8579c1-592d-4639-a6a6-4a9a3122f369",
+        "name": "Code in JavaScript"
+      }
+    ],
+    "connections": {
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "Append row in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Append row in sheet": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "pinData": {},
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "b78bb889dab75452ebe597fb9c2fbbeb90b616c99a2191f4d5fb9e9720ec381b"
+    }
+  }

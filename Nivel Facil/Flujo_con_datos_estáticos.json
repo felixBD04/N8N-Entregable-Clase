@@ -1,0 +1,83 @@
+{
+    "nodes": [
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "fc585223-c3b1-4c90-ab55-8a17f5199b2a",
+                "name": "pais",
+                "value": "Colombia",
+                "type": "string"
+              },
+              {
+                "id": "8354bb1f-94f6-442d-9c7f-f5aedc84edbe",
+                "name": "nombre",
+                "value": "Juan Felix Ballesteros Diaz",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          160,
+          128
+        ],
+        "id": "dc0a644d-694a-4bee-8993-25e21055db9a",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -32,
+          128
+        ],
+        "id": "c037569b-85f1-4829-b841-c92d58dd4fb8",
+        "name": "When clicking ‘Execute workflow’"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          352,
+          128
+        ],
+        "id": "3f0f0952-a69a-4198-b998-a770d896096b",
+        "name": "No Operation, do nothing"
+      }
+    ],
+    "connections": {
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "pinData": {},
+    "meta": {
+      "instanceId": "b78bb889dab75452ebe597fb9c2fbbeb90b616c99a2191f4d5fb9e9720ec381b"
+    }
+  }
