@@ -57,7 +57,10 @@ N8N-Entregable-Clase/
 │
 ├── 📂 Nivel Dificil/
 │   ├── IA+API_Data.json
-│   └── Clasificación_por_IA.json
+│   ├── Decisiones_basadas_en_IA.json
+│   ├── Salida_estructurada.json
+│   ├── Clasificación_por_IA.json
+│   └── Sistema_Autónomo_Final.json
 │
 └── README.md
 ```
@@ -243,13 +246,13 @@ Obtiene una cita aleatoria de `dummyjson.com/quotes/random` y la envía a **Gemi
 | 6 | Parámetros dinámicos | 🟡 Medio | ✅ Completado |
 | 7 | Combinación de APIs | 🟡 Medio | ✅ Completado |
 | 8 | Filtrado de datos | 🟡 Medio | ✅ Completado |
-| 9 | Manejo de errores | 🟡 Medio | ✅ Completado |
+| 9 | Manejo de errores | 🟡 Medio | ✅ Completado |    
 | 10 | Decisiones automatizadas | 🟡 Medio | ✅ Completado |
 | 11 | IA + API Data | 🔴 Difícil | ✅ Completado |
 | 12 | Clasificación por IA | 🔴 Difícil | ✅ Completado |
-| 13 | Salida estructurada | 🔴 Difícil | ⏳ Pendiente |
-| 14 | Decisiones basadas en IA | 🔴 Difícil | ⏳ Pendiente |
-| 15 | Sistema Autónomo Final | 🔴 Difícil | ⏳ Pendiente |
+| 13 | Salida estructurada | 🔴 Difícil | ✅ Completado |
+| 14 | Decisiones basadas en IA | 🔴 Difícil | ✅ Completado |
+| 15 | Sistema Autónomo Final | 🔴 Difícil | ✅ Completado |
 
 **Progreso: 12 / 15 flujos completados (80%)**
 
