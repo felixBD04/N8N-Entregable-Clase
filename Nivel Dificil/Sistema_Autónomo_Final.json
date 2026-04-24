@@ -1,0 +1,428 @@
+{
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "minutes"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          -96,
+          0
+        ],
+        "id": "fabab41e-8a70-49c4-953c-cc5f4dd56261",
+        "name": "Schedule Trigger"
+      },
+      {
+        "parameters": {
+          "url": "https://newsdata.io/api/1/latest?apikey=pub_e1bbcdb587bc4b0581497e8f70b2ae66",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          112,
+          0
+        ],
+        "id": "dba9e722-5836-4bd5-b43a-7f0c4b7f3640",
+        "name": "HTTP Request"
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "results",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          320,
+          0
+        ],
+        "id": "3a903e7c-6f3d-4ca0-ab30-3e6a3d787534",
+        "name": "Split Out"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "6ce238cd-8c66-4359-a743-7ad453953827",
+                "leftValue": "={{ $json.language }}",
+                "rightValue": "spanish",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.3,
+        "position": [
+          544,
+          0
+        ],
+        "id": "36eba639-4297-4292-bd11-211544394a68",
+        "name": "Filter"
+      },
+      {
+        "parameters": {
+          "modelId": {
+            "__rl": true,
+            "value": "models/gemini-2.5-flash",
+            "mode": "list",
+            "cachedResultName": "models/gemini-2.5-flash"
+          },
+          "messages": {
+            "values": [
+              {
+                "content": "=Eres un clasificador de noticias.\n\nTu tarea es analizar el siguiente texto y determinar si el sentimiento es NEGATIVO o NO_NEGATIVO.\n\nReglas:\n- Responde únicamente con una de estas dos opciones exactas:\n  NEGATIVO\n  NO_NEGATIVO\n- No expliques tu respuesta.\n- No agregues ningún otro texto.\n- Considera NEGATIVO si hay violencia, tragedias, problemas, crisis, delitos, conflictos, críticas o situaciones desfavorables.\n\nTexto:\n{{ $json.title }}{{ $json.description }}"
+              }
+            ]
+          },
+          "builtInTools": {},
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.googleGemini",
+        "typeVersion": 1.1,
+        "position": [
+          768,
+          0
+        ],
+        "id": "537b1d94-4324-4d65-8053-4f116597414c",
+        "name": "Message a model",
+        "credentials": {
+          "googlePalmApi": {
+            "id": "DrQvNed7ctNTDsFv",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "a887e00b-be82-4341-991d-011a9712a34f",
+                "leftValue": "={{ $json.content.parts[0].text }}",
+                "rightValue": "NEGATIVO",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          1120,
+          0
+        ],
+        "id": "8b7dcfce-18bd-4817-b10d-27a6b63209fb",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1bMmrQbPkpP_8v6WygHWNxakLeIrDkz4XTS6OIZMd9Aw",
+            "mode": "list",
+            "cachedResultName": "News Filter",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bMmrQbPkpP_8v6WygHWNxakLeIrDkz4XTS6OIZMd9Aw/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Negativas",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bMmrQbPkpP_8v6WygHWNxakLeIrDkz4XTS6OIZMd9Aw/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Titulo": "={{ $('Filter').item.json.title }}",
+              "Fecha": "={{ $('Filter').item.json.pubDate }}",
+              "Descripcion": "={{ $('Filter').item.json.description }}",
+              "URL": "={{ $('Filter').item.json.link }}",
+              "Fuente": "={{ $('Filter').item.json.source_name }}"
+            },
+            "matchingColumns": [
+              "Fecha"
+            ],
+            "schema": [
+              {
+                "id": "Fecha",
+                "displayName": "Fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Titulo",
+                "displayName": "Titulo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Descripcion",
+                "displayName": "Descripcion",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Fuente",
+                "displayName": "Fuente",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "URL",
+                "displayName": "URL",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          1360,
+          -128
+        ],
+        "id": "42273a09-7d80-48a2-bf97-b9f4c0a23678",
+        "name": "Append or update row in sheet",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "HzhFjWM0vlFndaAU",
+            "name": "Google Sheets account 2"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1bMmrQbPkpP_8v6WygHWNxakLeIrDkz4XTS6OIZMd9Aw",
+            "mode": "list",
+            "cachedResultName": "News Filter",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bMmrQbPkpP_8v6WygHWNxakLeIrDkz4XTS6OIZMd9Aw/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1858418739,
+            "mode": "list",
+            "cachedResultName": "No_Negativas",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bMmrQbPkpP_8v6WygHWNxakLeIrDkz4XTS6OIZMd9Aw/edit#gid=1858418739"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "URL": "={{ $('Filter').item.json.link }}",
+              "Descripcion": "={{ $('Filter').item.json.description }}",
+              "Titulo": "={{ $('Filter').item.json.title }}",
+              "Fecha": "={{ $('Filter').item.json.pubDate }}",
+              "Fuente": "={{ $('Filter').item.json.source_name }}"
+            },
+            "matchingColumns": [
+              "Fecha"
+            ],
+            "schema": [
+              {
+                "id": "Fecha",
+                "displayName": "Fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Titulo",
+                "displayName": "Titulo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Descripcion",
+                "displayName": "Descripcion",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Fuente",
+                "displayName": "Fuente",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "URL",
+                "displayName": "URL",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          1360,
+          96
+        ],
+        "id": "1e5b8b02-bd8a-4367-9d05-bc181fade9d9",
+        "name": "Append or update row in sheet1",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "HzhFjWM0vlFndaAU",
+            "name": "Google Sheets account 2"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Filter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter": {
+        "main": [
+          [
+            {
+              "node": "Message a model",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Message a model": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Append or update row in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Append or update row in sheet1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "pinData": {},
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "b78bb889dab75452ebe597fb9c2fbbeb90b616c99a2191f4d5fb9e9720ec381b"
+    }
+  }

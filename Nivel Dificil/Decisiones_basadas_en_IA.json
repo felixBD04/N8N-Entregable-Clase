@@ -1,0 +1,192 @@
+{
+    "nodes": [
+      {
+        "parameters": {
+          "modelId": {
+            "__rl": true,
+            "value": "models/gemini-2.5-flash-lite",
+            "mode": "list",
+            "cachedResultName": "models/gemini-2.5-flash-lite"
+          },
+          "messages": {
+            "values": [
+              {
+                "content": "=Eres un clasificador de texto.\n\nTu única tarea es analizar el siguiente texto y determinar si es NEGATIVO o NO NEGATIVO.\n\nReglas:\n- Responde únicamente con una de estas dos opciones:\n  NEGATIVO\n  NO_NEGATIVO\n- No expliques tu respuesta.\n- No agregues texto adicional.\n- Considera como NEGATIVO cualquier texto con quejas, enojo, frustración, críticas o emociones negativas.\n\nTexto:\n{{ $json.quote }}"
+              }
+            ]
+          },
+          "builtInTools": {},
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.googleGemini",
+        "typeVersion": 1.1,
+        "position": [
+          416,
+          0
+        ],
+        "id": "f52fe346-50fe-4ebb-850c-1135c4884646",
+        "name": "Message a model",
+        "credentials": {
+          "googlePalmApi": {
+            "id": "DrQvNed7ctNTDsFv",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "https://dummyjson.com/quotes/random",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          208,
+          0
+        ],
+        "id": "e7ad5c2a-4ed6-4351-b0d5-ad9e612857ac",
+        "name": "HTTP Request"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "4b314a00-93ab-498f-9e3c-6d54eaa8f6d4",
+        "name": "When clicking ‘Execute workflow’"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "5813afc9-ee89-4797-9be0-679efe88d303",
+                "leftValue": "={{ $json.content.parts[0].text }}",
+                "rightValue": "NEGATIVO",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          768,
+          0
+        ],
+        "id": "75db509a-43b1-4418-adf0-549fcaabb00d",
+        "name": "If"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          976,
+          96
+        ],
+        "id": "0d954af3-f9af-4293-8289-d61617fe16ab",
+        "name": "No Operation, do nothing1"
+      },
+      {
+        "parameters": {
+          "sendTo": "juanfelixbd@gmail.com",
+          "subject": "Reporte de sentimineto negativo",
+          "message": "=se encontro un sentimineto negativo en este texto:  {{ $('HTTP Request').item.json.quote }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.2,
+        "position": [
+          976,
+          -80
+        ],
+        "id": "6613f262-1e2a-416d-9cb6-58ae8c0fe7a1",
+        "name": "Send a message",
+        "webhookId": "32b44418-0899-4e59-aba7-dddb8c2bf197",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "a71U1aO8IrksPr0Z",
+            "name": "Gmail OAuth2 API"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Message a model": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "Message a model",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Send a message",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "No Operation, do nothing1": {
+        "main": [
+          []
+        ]
+      }
+    },
+    "pinData": {},
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "b78bb889dab75452ebe597fb9c2fbbeb90b616c99a2191f4d5fb9e9720ec381b"
+    }
+  }
