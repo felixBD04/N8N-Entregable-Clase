@@ -57,9 +57,9 @@ N8N-Entregable-Clase/
 │
 ├── 📂 Nivel Dificil/
 │   ├── IA+API_Data.json
-│   ├── Decisiones_basadas_en_IA.json
-│   ├── Salida_estructurada.json
 │   ├── Clasificación_por_IA.json
+│   ├── Salida_estructurada.json
+│   ├── Decisiones_basadas_en_IA.json
 │   └── Sistema_Autónomo_Final.json
 │
 └── README.md
@@ -136,22 +136,22 @@ Genera un ID aleatorio con JavaScript (entre 1 y 826), consulta la **Rick and Mo
 ### 6. Parámetros Dinámicos
 **Archivo:** `Nivel Medio/Parámetros_dinámicos.json`
 
-Demuestra el uso de **Query Parameters dinámicos** en un HTTP Request. Los parámetros `name` y `species` son definidos como variables con el nodo Set y luego inyectados en la URL de consulta a la Rick and Morty API, buscando personajes humanoides llamados "Rick".
+Demuestra el uso de **Query Parameters verdaderamente dinámicos** en un HTTP Request. El flujo presenta un **formulario web** al usuario donde ingresa el nombre y la especie a buscar. Esos valores viajan como parámetros a la Rick and Morty API y el nodo Set final muestra cuántos personajes se encontraron y los parámetros utilizados.
 
-**API utilizada:** `https://rickandmortyapi.com/api/character/?name=rick&species=Humanoid`  
-**Nodos utilizados:** `Manual Trigger` → `Set (Edit Fields)` → `HTTP Request` → `No Operation`  
-**Resultado:** Consultas personalizadas y parametrizadas a APIs externas.
+**API utilizada:** `https://rickandmortyapi.com/api/character/`  
+**Nodos utilizados:** `Form Trigger` → `HTTP Request` → `Set (Resumen de resultados)` → `No Operation`  
+**Resultado:** Consultas personalizadas y parametrizadas por el usuario en tiempo real.
 
 ---
 
 ### 7. Combinación de APIs
 **Archivo:** `Nivel Medio/Combinación_de_APIs.json`
 
-Realiza **dos peticiones HTTP en paralelo** (un personaje aleatorio de Rick and Morty y un chiste oscuro de JokeAPI) y combina ambas respuestas en un único objeto usando el nodo **Merge** por posición.
+Realiza **dos peticiones HTTP en paralelo**: un personaje aleatorio de Rick and Morty (ID generado en nodo Code separado) y un consejo de vida de **Advice Slip API**. Combina ambas respuestas con el nodo **Merge** y arma un objeto final limpio con nombre del personaje, estado y consejo del día.
 
-**APIs utilizadas:** `rickandmortyapi.com` + `v2.jokeapi.dev/joke/Dark`  
-**Nodos utilizados:** `Manual Trigger` → `HTTP Request` + `HTTP Request` → `Merge` → `No Operation`  
-**Resultado:** Dominio del nodo Merge y combinación de múltiples fuentes de datos.
+**APIs utilizadas:** `rickandmortyapi.com` + `api.adviceslip.com/advice`  
+**Nodos utilizados:** `Manual Trigger` → `Code (JS)` → `HTTP Request` + `HTTP Request` → `Merge` → `Set (Armar objeto combinado)` → `No Operation`  
+**Resultado:** Dominio del nodo Merge con datos coherentes y objeto combinado estructurado.
 
 ---
 
@@ -169,11 +169,11 @@ Obtiene la primera página de personajes de Rick and Morty, los descompone con *
 ### 9. Manejo de Errores
 **Archivo:** `Nivel Medio/Manejo_de_errores.json`
 
-Implementa un flujo **robusto y resiliente** que consulta la Rick and Morty API con `onError: continueRegularOutput` para no detener el flujo ante fallos. Luego, un nodo **IF** evalúa si existe un mensaje de error en la respuesta y bifurca el flujo: una rama para el caso de error y otra para el caso exitoso.
+Implementa un flujo **robusto y resiliente** que apunta intencionalmente a una **URL rota** para demostrar el manejo real de errores. Con `onError: continueRegularOutput` el flujo no se detiene, y un nodo **IF** evalúa si existe error. La rama de error registra el mensaje, timestamp y acción tomada con un nodo Set; la rama exitosa confirma el estado OK.
 
-**API utilizada:** `https://rickandmortyapi.com/api/character/{id}`  
-**Nodos utilizados:** `Manual Trigger` → `HTTP Request` → `IF` → `No Operation` / `No Operation`  
-**Resultado:** Flujos resilientes con manejo explícito de errores y bifurcaciones.
+**URL de prueba:** `https://api-que-no-existe-para-prueba.xyz/data` (rota intencionalmente)  
+**Nodos utilizados:** `Manual Trigger` → `HTTP Request` → `IF (¿Hubo error?)` → `Set (Registrar error)` / `Set (Confirmar éxito)`  
+**Resultado:** Flujo resiliente con manejo explícito y visible de errores en ambas ramas.
 
 ---
 
@@ -219,18 +219,42 @@ Obtiene una cita aleatoria de `dummyjson.com/quotes/random` y la envía a **Gemi
 
 ---
 
-### 13. Salida Estructurada ⏳ *Pendiente*
-**Descripción planificada:** Forzar a la IA a devolver datos exclusivamente en formato JSON para su uso en procesos posteriores, implementando parsing estructurado de respuestas.
+### 13. Salida Estructurada
+**Archivo:** `Nivel Dificil/Salida_estructurada.json`
+
+Obtiene una cita aleatoria, la envía a **Gemini 2.5 Flash Lite** forzando una respuesta exclusivamente en JSON (sin markdown). El nodo **Code** parsea y limpia la respuesta, y un nodo **IF** filtra por sentimiento: si es negativo, guarda el registro completo en **Google Sheets**; si no, lo descarta. El JSON estructurado alimenta un proceso posterior real.
+
+**API utilizada:** `https://dummyjson.com/quotes/random`  
+**IA utilizada:** Google Gemini 2.5 Flash Lite  
+**Salida:** Google Sheets (solo sentimientos negativos)  
+**Nodos utilizados:** `Manual Trigger` → `HTTP Request` → `Gemini` → `Code (JS)` → `IF (¿Es negativo?)` → `Google Sheets` / `No Operation`  
+**Resultado:** Parsing estructurado de respuestas de IA con proceso posterior real basado en los datos.
 
 ---
 
-### 14. Decisiones Basadas en IA ⏳ *Pendiente*
-**Descripción planificada:** Ramificar el flujo según el análisis devuelto por la IA (ej: reportar solo textos con sentimiento negativo), logrando automatización inteligente real.
+### 14. Decisiones Basadas en IA
+**Archivo:** `Nivel Dificil/Decisiones_basadas_en_IA.json`
+
+Obtiene una cita aleatoria y la envía a **Gemini 2.5 Flash Lite** con un prompt que fuerza respuesta binaria (`NEGATIVO` o `NO_NEGATIVO`). Un nodo **IF** compara la respuesta exacta: si es negativa, envía un **correo Gmail** con el texto original; si no, pasa a un NoOp.
+
+**API utilizada:** `https://dummyjson.com/quotes/random`  
+**IA utilizada:** Google Gemini 2.5 Flash Lite  
+**Salida:** Gmail  
+**Nodos utilizados:** `Manual Trigger` → `HTTP Request` → `Gemini` → `IF` → `Gmail` / `No Operation`  
+**Resultado:** Automatización inteligente real con acción concreta basada en análisis de IA.
 
 ---
 
-### 15. Sistema Autónomo Final ⏳ *Pendiente*
-**Descripción planificada:** Workflow completo end-to-end: `Cron → API → Filtro → IA → Clasificación → Almacenamiento`, integrando todos los conceptos aprendidos en un sistema de nivel profesional.
+### 15. Sistema Autónomo Final
+**Archivo:** `Nivel Dificil/Sistema_Autónomo_Final.json`
+
+Workflow end-to-end completamente autónomo: consume noticias reales de **NewsData.io** cada minuto, filtra por idioma español, envía cada noticia a **Gemini 2.5 Flash** para clasificar el sentimiento, y según el resultado guarda en dos hojas separadas de **Google Sheets**: `Negativas` y `No_Negativas`, usando `appendOrUpdate` para evitar duplicados.
+
+**Fuente de datos:** NewsData.io API  
+**IA utilizada:** Google Gemini 2.5 Flash  
+**Salida:** Google Sheets (dos hojas: Negativas / No_Negativas)  
+**Nodos utilizados:** `Schedule Trigger` → `HTTP Request` → `Split Out` → `Filter` → `Gemini` → `IF` → `Google Sheets (Negativas)` / `Google Sheets (No_Negativas)`  
+**Resultado:** Sistema autónomo de nivel profesional con clasificación inteligente y almacenamiento diferenciado.
 
 ---
 
@@ -246,7 +270,7 @@ Obtiene una cita aleatoria de `dummyjson.com/quotes/random` y la envía a **Gemi
 | 6 | Parámetros dinámicos | 🟡 Medio | ✅ Completado |
 | 7 | Combinación de APIs | 🟡 Medio | ✅ Completado |
 | 8 | Filtrado de datos | 🟡 Medio | ✅ Completado |
-| 9 | Manejo de errores | 🟡 Medio | ✅ Completado |    
+| 9 | Manejo de errores | 🟡 Medio | ✅ Completado |
 | 10 | Decisiones automatizadas | 🟡 Medio | ✅ Completado |
 | 11 | IA + API Data | 🔴 Difícil | ✅ Completado |
 | 12 | Clasificación por IA | 🔴 Difícil | ✅ Completado |
@@ -254,7 +278,7 @@ Obtiene una cita aleatoria de `dummyjson.com/quotes/random` y la envía a **Gemi
 | 14 | Decisiones basadas en IA | 🔴 Difícil | ✅ Completado |
 | 15 | Sistema Autónomo Final | 🔴 Difícil | ✅ Completado |
 
-**Progreso: 12 / 15 flujos completados (80%)**
+**Progreso: 15 / 15 flujos completados (100%) ✅**
 
 ---
 
@@ -265,12 +289,14 @@ Obtiene una cita aleatoria de `dummyjson.com/quotes/random` y la envía a **Gemi
 | **n8n** | Plataforma principal de automatización |
 | **Chuck Norris API** | API pública de prueba (chistes aleatorios) |
 | **Rick and Morty API** | API pública para datos de personajes |
-| **JokeAPI** | API de chistes para combinación de fuentes |
+| **Advice Slip API** | API de consejos para combinación de fuentes |
 | **DummyJSON** | API de citas aleatorias |
 | **TechCrunch RSS** | Feed de noticias tecnológicas |
+| **NewsData.io** | API de noticias reales en múltiples idiomas |
 | **Google Gemini 2.5 Flash** | Modelo de IA para clasificación y resumen |
 | **Google Sheets** | Persistencia y almacenamiento de datos |
 | **Telegram Bot** | Canal de notificaciones automatizadas |
+| **Gmail** | Notificaciones por correo ante sentimientos negativos |
 
 ---
 
@@ -284,8 +310,4 @@ Obtiene una cita aleatoria de `dummyjson.com/quotes/random` y la envía a **Gemi
 6. Configura las credenciales necesarias (Google Sheets, Telegram, Google Gemini, etc.).
 7. ¡Ejecuta el flujo!
 
-> **Nota:** Algunos flujos requieren credenciales de terceros (Google Sheets OAuth2, Telegram Bot Token, Google Gemini API Key). Deberás configurarlas en tu propia instancia de n8n antes de ejecutarlos.
-
----
-
-*Repositorio en progreso — los flujos de Nivel Difícil (13–15) serán añadidos próximamente.*
+> **Nota:** Algunos flujos requieren credenciales de terceros (Google Sheets OAuth2, Telegram Bot Token, Google Gemini API Key, Gmail OAuth2). Deberás configurarlas en tu propia instancia de n8n antes de ejecutarlos.

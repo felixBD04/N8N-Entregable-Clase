@@ -1,130 +1,179 @@
 {
-    "nodes": [
-      {
-        "parameters": {},
-        "type": "n8n-nodes-base.manualTrigger",
-        "typeVersion": 1,
-        "position": [
-          -304,
-          -16
-        ],
-        "id": "6d7b12fa-1cbe-43b8-b9c0-8ffb527128fb",
-        "name": "When clicking ‘Execute workflow’"
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [-496, 0],
+      "id": "6d7b12fa-1cbe-43b8-b9c0-8ffb527128fb",
+      "name": "When clicking 'Execute workflow'"
+    },
+    {
+      "parameters": {
+        "jsCode": "const randomId = Math.floor(Math.random() * 826) + 1;\nreturn [{ json: { character_id: randomId } }];"
       },
-      {
-        "parameters": {
-          "url": "=https://rickandmortyapi.com/api/character/{{Math.floor(Math.random() * 826) + 1}}",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.4,
-        "position": [
-          -32,
-          -112
-        ],
-        "id": "30cc8e4f-f98e-4190-9ec9-4a8c06775f7c",
-        "name": "HTTP Request"
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-288, 0],
+      "id": "code-random-id-001",
+      "name": "Generar ID aleatorio"
+    },
+    {
+      "parameters": {
+        "url": "=https://rickandmortyapi.com/api/character/{{ $json.character_id }}",
+        "options": {}
       },
-      {
-        "parameters": {},
-        "type": "n8n-nodes-base.noOp",
-        "typeVersion": 1,
-        "position": [
-          496,
-          -16
-        ],
-        "id": "84b92b51-1b99-489b-8ab5-484aa1678e7b",
-        "name": "No Operation, do nothing"
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [-64, -112],
+      "id": "30cc8e4f-f98e-4190-9ec9-4a8c06775f7c",
+      "name": "Rick and Morty - Personaje"
+    },
+    {
+      "parameters": {
+        "url": "https://api.adviceslip.com/advice",
+        "options": {}
       },
-      {
-        "parameters": {
-          "url": "https://v2.jokeapi.dev/joke/Dark",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.4,
-        "position": [
-          -32,
-          48
-        ],
-        "id": "71970fa4-4255-4cf4-a8b4-45d7c10997f6",
-        "name": "HTTP Request1"
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [-64, 112],
+      "id": "71970fa4-4255-4cf4-a8b4-45d7c10997f6",
+      "name": "Advice Slip - Consejo"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
       },
-      {
-        "parameters": {
-          "mode": "combine",
-          "combineBy": "combineByPosition",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.merge",
-        "typeVersion": 3.2,
-        "position": [
-          304,
-          -16
-        ],
-        "id": "5098af67-dc51-4e51-9538-23f676bfb5fd",
-        "name": "Merge"
-      }
-    ],
-    "connections": {
-      "When clicking ‘Execute workflow’": {
-        "main": [
-          [
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [240, 0],
+      "id": "5098af67-dc51-4e51-9538-23f676bfb5fd",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
             {
-              "node": "HTTP Request1",
-              "type": "main",
-              "index": 0
+              "id": "set-merge-001",
+              "name": "personaje_nombre",
+              "value": "={{ $json.name }}",
+              "type": "string"
             },
             {
-              "node": "HTTP Request",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "HTTP Request": {
-        "main": [
-          [
+              "id": "set-merge-002",
+              "name": "personaje_estado",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            },
             {
-              "node": "Merge",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "No Operation, do nothing": {
-        "main": [
-          []
-        ]
-      },
-      "HTTP Request1": {
-        "main": [
-          [
+              "id": "set-merge-003",
+              "name": "consejo_del_dia",
+              "value": "={{ $json.slip.advice }}",
+              "type": "string"
+            },
             {
-              "node": "Merge",
-              "type": "main",
-              "index": 1
+              "id": "set-merge-004",
+              "name": "resumen",
+              "value": "={{ $json.name }} está {{ $json.status }}. Consejo: {{ $json.slip.advice }}",
+              "type": "string"
             }
           ]
-        ]
+        },
+        "options": {}
       },
-      "Merge": {
-        "main": [
-          [
-            {
-              "node": "No Operation, do nothing",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      }
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [464, 0],
+      "id": "set-final-merge-001",
+      "name": "Armar objeto combinado"
     },
-    "pinData": {},
-    "meta": {
-      "templateCredsSetupCompleted": true,
-      "instanceId": "b78bb889dab75452ebe597fb9c2fbbeb90b616c99a2191f4d5fb9e9720ec381b"
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [672, 0],
+      "id": "84b92b51-1b99-489b-8ab5-484aa1678e7b",
+      "name": "No Operation, do nothing"
     }
+  ],
+  "connections": {
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          {
+            "node": "Generar ID aleatorio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generar ID aleatorio": {
+      "main": [
+        [
+          {
+            "node": "Rick and Morty - Personaje",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Advice Slip - Consejo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rick and Morty - Personaje": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Advice Slip - Consejo": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Armar objeto combinado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Armar objeto combinado": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "b78bb889dab75452ebe597fb9c2fbbeb90b616c99a2191f4d5fb9e9720ec381b"
   }
+}

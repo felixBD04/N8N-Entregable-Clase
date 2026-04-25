@@ -1,137 +1,220 @@
 {
-    "nodes": [
-      {
-        "parameters": {
-          "modelId": {
-            "__rl": true,
-            "value": "models/gemini-2.5-flash-lite",
-            "mode": "list",
-            "cachedResultName": "models/gemini-2.5-flash-lite"
-          },
-          "messages": {
-            "values": [
-              {
-                "content": "=Devuelve exclusivamente un JSON válido.\nNo uses markdown.\nNo uses ```json.\nNo agregues texto antes ni después.\n\nFormato exacto:\n{\n  \"texto\": \"{{ $json.quote }}\",\n  \"sentimiento\": \"positivo | negativo | neutral\",\n  \"categoria\": \"motivacional | reflexivo | critico | informativo | otro\",\n  \"confianza\": \"alta | media | baja\",\n  \"razon\": \"explicación corta\"\n}"
-              }
-            ]
-          },
-          "builtInTools": {},
-          "options": {}
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "id": "4b314a00-93ab-498f-9e3c-6d54eaa8f6d4",
+      "name": "When clicking 'Execute workflow'"
+    },
+    {
+      "parameters": {
+        "url": "https://dummyjson.com/quotes/random",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [208, 0],
+      "id": "e7ad5c2a-4ed6-4351-b0d5-ad9e612857ac",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash-lite"
         },
-        "type": "@n8n/n8n-nodes-langchain.googleGemini",
-        "typeVersion": 1.1,
-        "position": [
-          416,
-          0
-        ],
-        "id": "f52fe346-50fe-4ebb-850c-1135c4884646",
-        "name": "Message a model",
-        "credentials": {
-          "googlePalmApi": {
-            "id": "DrQvNed7ctNTDsFv",
-            "name": "Google Gemini(PaLM) Api account"
-          }
+        "messages": {
+          "values": [
+            {
+              "content": "=Devuelve exclusivamente un JSON válido.\nNo uses markdown.\nNo uses ```json.\nNo agregues texto antes ni después.\n\nFormato exacto:\n{\n  \"texto\": \"{{ $json.quote }}\",\n  \"sentimiento\": \"positivo | negativo | neutral\",\n  \"categoria\": \"motivacional | reflexivo | critico | informativo | otro\",\n  \"confianza\": \"alta | media | baja\",\n  \"razon\": \"explicación corta\"\n}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [416, 0],
+      "id": "f52fe346-50fe-4ebb-850c-1135c4884646",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "DrQvNed7ctNTDsFv",
+          "name": "Google Gemini(PaLM) Api account"
         }
-      },
-      {
-        "parameters": {
-          "url": "https://dummyjson.com/quotes/random",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.4,
-        "position": [
-          208,
-          0
-        ],
-        "id": "e7ad5c2a-4ed6-4351-b0d5-ad9e612857ac",
-        "name": "HTTP Request"
-      },
-      {
-        "parameters": {
-          "jsCode": "const textoIA = $json.content.parts[0].text;\n\nconst limpio = textoIA\n  .replace(/```json/g, '')\n  .replace(/```/g, '')\n  .trim();\n\nconst data = JSON.parse(limpio);\n\nreturn [\n  {\n    json: data\n  }\n];"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          736,
-          0
-        ],
-        "id": "14e8d5d7-6e7c-453e-9b04-f5ba61619c32",
-        "name": "Code in JavaScript"
-      },
-      {
-        "parameters": {},
-        "type": "n8n-nodes-base.noOp",
-        "typeVersion": 1,
-        "position": [
-          944,
-          0
-        ],
-        "id": "332749eb-d923-4dac-9069-b7b532ceb332",
-        "name": "No Operation, do nothing"
-      },
-      {
-        "parameters": {},
-        "type": "n8n-nodes-base.manualTrigger",
-        "typeVersion": 1,
-        "position": [
-          0,
-          0
-        ],
-        "id": "4b314a00-93ab-498f-9e3c-6d54eaa8f6d4",
-        "name": "When clicking ‘Execute workflow’"
-      }
-    ],
-    "connections": {
-      "Message a model": {
-        "main": [
-          [
-            {
-              "node": "Code in JavaScript",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "HTTP Request": {
-        "main": [
-          [
-            {
-              "node": "Message a model",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Code in JavaScript": {
-        "main": [
-          [
-            {
-              "node": "No Operation, do nothing",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "When clicking ‘Execute workflow’": {
-        "main": [
-          [
-            {
-              "node": "HTTP Request",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
       }
     },
-    "pinData": {},
-    "meta": {
-      "templateCredsSetupCompleted": true,
-      "instanceId": "b78bb889dab75452ebe597fb9c2fbbeb90b616c99a2191f4d5fb9e9720ec381b"
+    {
+      "parameters": {
+        "jsCode": "const textoIA = $json.content.parts[0].text;\n\nconst limpio = textoIA\n  .replace(/```json/g, '')\n  .replace(/```/g, '')\n  .trim();\n\nconst data = JSON.parse(limpio);\n\nreturn [\n  {\n    json: data\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [736, 0],
+      "id": "14e8d5d7-6e7c-453e-9b04-f5ba61619c32",
+      "name": "Parsear JSON de IA"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cond-sent-001",
+              "leftValue": "={{ $json.sentimiento }}",
+              "rightValue": "negativo",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [960, 0],
+      "id": "if-sentimiento-001",
+      "name": "¿Es negativo?"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1zYZHcS4HbL5rpt35x9CsOguMApc-R4i5P4Cv3wUq7m0",
+          "mode": "list",
+          "cachedResultName": "clima_Usuario",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zYZHcS4HbL5rpt35x9CsOguMApc-R4i5P4Cv3wUq7m0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "personajes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zYZHcS4HbL5rpt35x9CsOguMApc-R4i5P4Cv3wUq7m0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "texto": "={{ $json.texto }}",
+            "sentimiento": "={{ $json.sentimiento }}",
+            "categoria": "={{ $json.categoria }}",
+            "confianza": "={{ $json.confianza }}",
+            "razon": "={{ $json.razon }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            { "id": "texto", "displayName": "texto", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "sentimiento", "displayName": "sentimiento", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "categoria", "displayName": "categoria", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "confianza", "displayName": "confianza", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "razon", "displayName": "razon", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [1184, -128],
+      "id": "gs-negativo-001",
+      "name": "Guardar en Sheets (Negativos)",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "HzhFjWM0vlFndaAU",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1184, 112],
+      "id": "332749eb-d923-4dac-9069-b7b532ceb332",
+      "name": "No guardar (no negativo)"
     }
+  ],
+  "connections": {
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Parsear JSON de IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear JSON de IA": {
+      "main": [
+        [
+          {
+            "node": "¿Es negativo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es negativo?": {
+      "main": [
+        [
+          {
+            "node": "Guardar en Sheets (Negativos)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No guardar (no negativo)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "b78bb889dab75452ebe597fb9c2fbbeb90b616c99a2191f4d5fb9e9720ec381b"
   }
+}
